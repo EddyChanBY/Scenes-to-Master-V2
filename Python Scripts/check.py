@@ -104,15 +104,14 @@ def check_area(self, sc, df):
         ck_result = self.launch_ck_dialog_box(dlg_title, dlg_where, dlg_instruction, name_input, search_arr)
         if ck_result[0] == 1:
             # This is a new area, update area list in template data frame
-            if len(area_list) < 10:
+            if len(area_list) < df.shape[1] - 2:
+                # if still have space
                 df.loc[df[df['Set'] == sc.set].index[0], df.columns[len(area_list) + 2]] = ck_result[1]
             else:
-                icon = QMessageBox.Icon.Warning
-                title = 'Skip Aera'
-                text = "Too many aeras for this set,"
-                text2 = 'droping this new area.'
-                btns = QMessageBox.StandardButton.Ok
-                ret = warning_msg.show_msg(icon, title, text, text2, btns)
+                # add column in df then update cell
+                col_head = 'Area ' + str(df.shape[1] - 1)
+                df[col_head] = np.nan
+                df.loc[df[df['Set'] == sc.set].index[0], df.columns[df.shape[1] - 1]] = ck_result[1]
         elif ck_result[0] == 3:
             # ck_result[0] == 3, user want to abort
             self.dlg_abort = True
@@ -151,7 +150,7 @@ def check_cast(self, sc, df, df_r):
                 if this_cast not in cast_arr_r:
                     # If cast in template but not in report, not a main cast, 
                     # not a new PT here, must be recurent PT
-                    df_r.loc[len(df_r.index)] = ['RC', this_cast, np.nan]
+                    df_r.loc[len(df_r.index)] = ['RC', this_cast]
                     cast_arr_r = df_r["Cast"].to_numpy()            
                 # where is the cast in sc object
                 index_in_sc = new_casts_input.index(each_cast)
@@ -180,7 +179,7 @@ def check_cast(self, sc, df, df_r):
                 # Update cast list in template df
                 df.loc[len(df.index)] = ["New", ck_result[1], np.nan]
                 # Update cast list in report df, first extract the row as df_temp
-                df_r.loc[len(df_r.index)] = ["New", ck_result[1], np.nan]
+                df_r.loc[len(df_r.index)] = ["New", ck_result[1]]
                 # Since additional cast added, update cast array
                 cast_arr = df["Cast"].to_numpy()
                 cast_arr_r = df_r["Cast"].to_numpy()
@@ -191,7 +190,7 @@ def check_cast(self, sc, df, df_r):
                 # This is a cast in list
                 # update cast report if not inside
                 if ck_result[1] not in cast_arr_r:
-                    df_r.loc[len(df_r.index)] = ['RC', ck_result[1], np.nan]
+                    df_r.loc[len(df_r.index)] = ['RC', ck_result[1]]
                     cast_arr_r = df_r["Cast"].to_numpy()
                 # where is the cast in sc object
                 index_in_sc = new_casts_input.index(each_cast)

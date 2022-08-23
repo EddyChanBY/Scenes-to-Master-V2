@@ -40,6 +40,8 @@ def convert_start(self):
     # template file exist is checked and never changed, 
     # no need to check again.
     # All df has been established in main, only load if empty
+    self.m_ui.statusbar.showMessage("Loading data from template file")
+    self.m_ui.statusbar.repaint()
     if self.df_ep.shape[1] == 0:
         # df_eps has 0 columns, open from template
         self.df_ep = pd.read_excel(self.template_file, sheet_name = 'Eps')
@@ -73,19 +75,33 @@ def convert_start(self):
     path = Path(self.master_file)
     if path.is_file():
         # Open the file
+        self.m_ui.statusbar.showMessage("Loading master file")
+        self.m_ui.statusbar.repaint()
         self.wb_master = load_workbook(self.master_file)
     else:
         # if no existing master file, create and save one.
+        self.m_ui.statusbar.showMessage("Creating and saving master file")
+        self.m_ui.statusbar.repaint()
         self.wb_master = Workbook()
         self.wb_master.save(self.master_file)
     if 'Cast Report' in self.wb_master.sheetnames:
         self.df_cast_report = pd.read_excel(self.master_file, sheet_name = 'Cast Report')
+        if self.df_cast_report.shape[1] > 2:
+            # Has done report before, discard other columns
+            self.df_cast_report.drop(self.df_cast_report.columns[2:self.df_cast_report.shape[1]], axis = 1, inplace = True)
+            # delete the multi heading
+            self.df_cast_report.drop(self.df_cast_report.index[0], axis= 0, inplace = True)
+            # delete all sheets except masters and cast report
+            for sheet in self.wb_master.sheetnames:
+                if not sheet.isdigit() and sheet != 'Cast Report':
+                    del self.wb_master[sheet]
     else:
         # create a new one
         self.df_cast_report = pd.DataFrame(columns = self.df_cast_template.columns)
         # fill the main cast
         self.df_cast_report = self.df_cast_template[self.df_cast_template.Type == 'Main'].copy()
-
+        # drop the Artises column
+        self.df_cast_report.drop(self.df_cast_report.columns[2], axis = 1, inplace = True)
     # Going in each episode
     for i in range(len(self.SxS_list)):
         if self.dlg_abort:
@@ -103,6 +119,8 @@ def convert_start(self):
             s = s[0:s.find('endnote')]
         self.sc.eps = self.eps_numbers[i]
         self.doing_eps = i + 1
+        self.m_ui.statusbar.showMessage("Converting #" + self.sc.eps)
+        self.m_ui.statusbar.repaint()
         ret = convert_ep.convert_this_ep(self, s)
         if ret == 'abort':
             # return to caller function master
@@ -194,6 +212,8 @@ def convert_start(self):
         ws_thisSet_t = format.set(ws_thisSet_t)
 
         # at the end of each episode, save both excel files
+        self.m_ui.statusbar.showMessage("Updating #" + self.sc.eps)
+        self.m_ui.statusbar.repaint()
         self.wb_master.save(self.master_file)
         self.wb_template.save(self.template_file)
         # Clean up df_ep for next episode

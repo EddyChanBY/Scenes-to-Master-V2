@@ -134,8 +134,9 @@ def master_sheet(ws, CastUsed):
                 wrap_text=True)
 
     # Now for the cast columns
-    for col in range(11, 72 + 1):
+    for col in range(11, 73):
         ws.column_dimensions[get_column_letter(col)].width = 3.09
+        
     for row in ws.iter_rows(min_col=11, max_col=72, min_row=1, max_row= 1):
         for cell in row:
             cell.font = Font(size=14)
@@ -160,13 +161,24 @@ def master_sheet(ws, CastUsed):
             cell.font = Font(size=14)
             cell.alignment=Alignment(horizontal='left', vertical='top', 
                 wrap_text=True)
-
+    # Hide empty column for master only
+    if ws.title.isdigit():
+        for col in range(11, CastUsed + 11):
+            column_empty = True
+            for row_num in range(2, lastrow + 2):
+                if ws.cell(row=row_num, column=col).value == 'X' or ws.cell(row=row_num, column=col).value == 'Y':
+                    #print(str(col) + ' NotXX ' + ws.cell(row=1, column=col).value)
+                    column_empty = False
+                    break
+            if column_empty:
+                #print(str(col) + ' Empty ' + ws.cell(row=1, column=col).value)
+                ws.column_dimensions[get_column_letter(col)].hidden= True
     # Hide unused part timers column
     for col in range(11 + CastUsed, 73):
         ws.column_dimensions[get_column_letter(col)].hidden= True
 
     # zoom to 50%
-    ws.sheet_view.zoomScale = 70
+    ws.sheet_view.zoomScale = 70 
     return ws
     
 

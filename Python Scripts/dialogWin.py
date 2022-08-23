@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(293, 410)
+        Dialog.resize(293, 421)
         self.lineEdit = QtWidgets.QLineEdit(Dialog)
         self.lineEdit.setGeometry(QtCore.QRect(20, 20, 261, 21))
         self.lineEdit.setObjectName("lineEdit")
@@ -47,7 +47,12 @@ class Ui_Dialog(object):
         self.label_Title.setFont(font)
         self.label_Title.setObjectName("label_Title")
         self.VOcheckBox = QtWidgets.QCheckBox(Dialog)
-        self.VOcheckBox.setGeometry(QtCore.QRect(110, 380, 81, 21))
+        self.VOcheckBox.setGeometry(QtCore.QRect(20, 110, 251, 21))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.VOcheckBox.sizePolicy().hasHeightForWidth())
+        self.VOcheckBox.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setBold(False)
         self.VOcheckBox.setFont(font)
@@ -71,4 +76,4 @@ class Ui_Dialog(object):
         self.Button_Extra.setText(_translate("Dialog", "Extra"))
         self.Button_Abort.setText(_translate("Dialog", "Abort"))
         self.label_Title.setText(_translate("Dialog", "TextLabel"))
-        self.VOcheckBox.setText(_translate("Dialog", " VO / Not in sc"))
+        self.VOcheckBox.setText(_translate("Dialog", " V.O. / Video / Not in Scene"))

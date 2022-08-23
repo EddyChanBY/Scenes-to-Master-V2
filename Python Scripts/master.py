@@ -31,7 +31,7 @@ except ImportError:
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, obj=None, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
-        self.setFixedSize(313, 439)
+        self.setFixedSize(313, 469)
         self.m_ui = Ui_MainWindow()
         self.m_ui.setupUi(self)
         # Put Signals and Events here
@@ -297,7 +297,7 @@ class Check_dialog(QDialog):
         
         # set new position
         self.setGeometry(parent.geometry().x() + self.width() + 13,parent.geometry().y(),self.width(),self.height())
-        
+        self.setFixedSize(293, 421)
         self.check_new = 0
         self.VOchecked = ''
         self.check_result = to_find
@@ -306,12 +306,15 @@ class Check_dialog(QDialog):
         if title == "Found new set":
             self.d_ui.label_Title.setText('Set')
             self.d_ui.Button_Extra.hide()
+            self.d_ui.VOcheckBox.hide()
         elif title == "Found new area":
             self.d_ui.label_Title.setText('Area')
             self.d_ui.Button_Extra.hide()
+            self.d_ui.VOcheckBox.hide()
         elif title == "Found new cast":
             self.d_ui.label_Title.setText('Cast')
             self.d_ui.Button_Extra.show()
+            self.d_ui.VOcheckBox.show()
 
         self.d_ui.lineEdit.setText(to_find)
         self.d_ui.label_2.setText(where)
