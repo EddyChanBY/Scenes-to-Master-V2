@@ -40,7 +40,8 @@ def check_set(self, sc, df):
             # This is a new set
             # Prepare fill in string
             fill_in_arr = ["OB", ck_result[1]]
-            for i in range(10):
+            fill_blank = df.shape[1] - 2
+            for i in range(fill_blank):
                 fill_in_arr.append(np.nan)
             # Update set list
             df.loc[len(df.index)] = fill_in_arr

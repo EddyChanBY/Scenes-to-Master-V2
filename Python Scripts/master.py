@@ -297,7 +297,7 @@ class Check_dialog(QDialog):
         
         # set new position
         self.setGeometry(parent.geometry().x() + self.width() + 13,parent.geometry().y(),self.width(),self.height())
-        self.setFixedSize(293, 421)
+        self.setFixedSize(293, 391)
         self.check_new = 0
         self.VOchecked = ''
         self.check_result = to_find
