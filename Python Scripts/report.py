@@ -1,11 +1,10 @@
 
 from pathlib import Path
-import os
 import pandas as pd
 import numpy as np
 from openpyxl import Workbook, load_workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
-from PyQt6.QtWidgets import QDialog, QMessageBox
+from PyQt6.QtWidgets import QMessageBox
 import warning_msg
 import format
 # to do reporting
@@ -87,6 +86,8 @@ def prepare_team_master(self, wb_master, all_eps):
                 df_team_m.columns = col_arr
             else:
                 # df exist and just append
+                self.m_ui.statusbar.showMessage('Copying episodes to Team  ' + team)
+                self.m_ui.statusbar.repaint()
                 df_ep = pd.read_excel(self.master_file, sheet_name=ep)
                 df_ep.columns = col_arr
                 df_team_m = pd.concat([df_team_m, df_ep], axis=0, ignore_index = True)
@@ -103,9 +104,13 @@ def prepare_team_master(self, wb_master, all_eps):
         # copy data over
         for r in dataframe_to_rows(df_team_m, index=False, header=True):
             ws_this_team.append(r)
+        self.m_ui.statusbar.showMessage('Formating for Team  ' + team)
+        self.m_ui.statusbar.repaint()
         # Format
         ws_this_team = format.master_sheet(ws_this_team, len(cast_arr))
         # Save
+        self.m_ui.statusbar.showMessage('Writing to file for Team  ' + team)
+        self.m_ui.statusbar.repaint()
         wb_master.save(self.master_file)
         percent_done = int(ep_done/total_eps * 80)
         self.m_ui.progressBar.setValue(percent_done)
@@ -125,7 +130,7 @@ def report_sets(self, wb_master, all_eps):
     df_report['Type'] = self.df_set_template['Type']
     df_report['Set'] = self.df_set_template['Set']
     # prepare df_schedule
-    df_schedule = pd.DataFrame(columns = ['Day', ' Date', 'Team', 'Loc', 'Set', 'From', 'To', 'Sc'])
+    df_schedule = pd.DataFrame(columns = ['Day', ' Date', 'Team', 'Loc', 'Set', 'From', 'To', 'Sc', 'Pg', 'Time', 'Extra', 'Meal', 'Remarks', "Director's request", "Scheduler's notes"])
     # check data in team master
     for index,team in enumerate(team_list):
         col = index + 2
@@ -134,7 +139,7 @@ def report_sets(self, wb_master, all_eps):
         for row, set in enumerate(set_list):
             appear = (df_team_all.Set == set[1]).sum()
             df_report.iat[row, col] = appear
-            df_schedule.loc[len(df_schedule.index)] = ['', '', team_short, set[0], set[1], '', '', appear]
+            df_schedule.loc[len(df_schedule.index)] = ['', '', team_short, set[0], set[1], '', '', appear, '', '', '', '', '', '', '']
     # Calculate total
     for row, set_name in enumerate(set_list):
         total_sc = 0
@@ -187,48 +192,6 @@ def report_sets(self, wb_master, all_eps):
     ws_schedule_report = format.schedule(ws_schedule_report)
     # Save
     wb_master.save(self.master_file)
-
-    '''# Format sheet
-    ws_set = wb_master.sheets['Set Report']
-    set_maxr = ws_set.range('B3').end('down').row + 1
-    set_maxc = ws_set.range('A1').end('right').column
-    # Set the column width
-    ws_set.range((1, 2),(set_maxr, 1)).autofit()
-    ws_set.range((1, 3),(set_maxr,set_maxc)).column_width = 7
-    # Set alignment
-    ws_set.range((1,3),(set_maxr,set_maxc)).api.HorizontalAlignment = -4108
-    # Bold the total values
-    ws_set.range((1,set_maxc),(set_maxr,set_maxc)).api.Font.Bold = True
-    # Draw border
-    row = 2
-    while row < set_maxr:
-        ws_set.range((row,1),(row,set_maxc)).api.Borders(8).LineStyle = 1
-        ws_set.range((row,1),(row,set_maxc)).api.Borders(8).Weight = 2
-        row = row + 5
-    ws_set.range((set_maxr,1),(set_maxr,set_maxc)).api.Borders(8).LineStyle = 1
-    ws_set.range((set_maxr,1),(set_maxr,set_maxc)).api.Borders(8).Weight = 2
-    ws_set.range((set_maxr,1),(set_maxr,set_maxc)).api.Borders(9).LineStyle = -4119
-    ws_set.range((set_maxr,1),(set_maxr,set_maxc)).api.Borders(9).Weight = 2
-    # display percentage
-    row = set_maxr + 2
-    total_set = total_ST + total_RC + total_OB
-    ws_set.range((row,1)).value = 'Statistic:'
-    ws_set.range((row + 1,2)).value = 'Descriptions'
-    ws_set.range((row + 1,3)).value = 'Count'
-    ws_set.range((row + 1,4)).value = 'Percentage'
-    ws_set.range((row + 2,1)).value = 'ST'
-    ws_set.range((row + 2,2)).value = 'Studio Sets'
-    ws_set.range((row + 2,3)).value = total_ST
-    ws_set.range((row + 2,4)).value = (total_ST / total_set)
-    ws_set.range((row + 3,1)).value = 'RC'
-    ws_set.range((row + 3,2)).value = 'Recurrent OB Sets'
-    ws_set.range((row + 3,3)).value = total_RC
-    ws_set.range((row + 3,4)).value = (total_RC / total_set)
-    ws_set.range((row + 4,1)).value = 'OB'
-    ws_set.range((row + 4,2)).value = 'Outside Broadcast'
-    ws_set.range((row + 4,3)).value = total_OB
-    ws_set.range((row + 4,4)).value = (total_OB / total_set)
-    ws_set.range((row,4),(row + 4,4)).api.NumberFormat = "0.00%"'''
 
 
 def report_cast(self, wb_master, all_eps):
@@ -285,34 +248,3 @@ def report_cast(self, wb_master, all_eps):
     ws_cast_report = format.cast_final(ws_cast_report, team_list)
     # Save
     wb_master.save(self.master_file)
-
-    '''# Format sheet
-    ws_cast = wb_master.sheets['Cast Report']
-    cast_maxr = ws_cast.range('A3').end('down').row
-    cast_maxc = ws_cast.range('A1').end('right').column
-    # suppress suppress prompts and alert messages
-    wb_master.app.display_alerts = False
-    # Set the column width
-    ws_cast.range((1, 1),(cast_maxr, 1)).autofit()
-    ws_cast.range((3,2),(cast_maxr,cast_maxc)).column_width = 5
-    # Set alignment
-    ws_cast.range((3,2),(cast_maxr,cast_maxc)).api.HorizontalAlignment = -4108
-    # Bold the total values
-    ws_cast.range((3,cast_maxc - 1),(cast_maxr,cast_maxc)).api.Font.Bold = True
-    # Greying the #Set columns
-    col = 3
-    for team in team_list:
-        ws_cast.range((3,col),(cast_maxr,col)).color = (230, 230, 230)
-        ws_cast.range((1,col - 1),(1,col)).merge()
-        col = col + 2
-    ws_cast.range((3,col),(cast_maxr,col)).color = (230, 230, 230)
-    ws_cast.range((1,col - 1),(1,col)).merge()
-    row = 3
-    # Draw border
-    while row < cast_maxr:
-        ws_cast.range((row,1),(row,cast_maxc)).api.Borders(8).LineStyle = 1
-        ws_cast.range((row,1),(row,cast_maxc)).api.Borders(8).Weight = 2
-        row = row + 5
-    # disable suppress suppress prompts and alert messages
-    wb_master.app.display_alerts = True'''
-

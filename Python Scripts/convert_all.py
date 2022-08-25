@@ -5,11 +5,11 @@ from pathlib import Path
 import os
 import re
 import pandas as pd
-import numpy as np
 from openpyxl import Workbook, load_workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 import convert_ep
 import format
+import warning_msg
 
 def convert_start(self):
     self.m_ui.statusbar.showMessage("Conversion started")
@@ -18,7 +18,16 @@ def convert_start(self):
     # since all files are from the add button, presuming they are OK
     self.eps_numbers = []
     for each_ep in self.SxS_list:
-        s = docx2python(each_ep).text
+        try:
+            s = docx2python(each_ep).text
+        except Exception as e:
+            icon = QMessageBox.Icon.Warning
+            title = 'Cannot open file:'
+            text = e.strerror + ', Check if file opened'
+            text2 = os.path.basename(e.filename)
+            btns = QMessageBox.StandardButton.Ok
+            ret = warning_msg.show_msg(icon, title, text, text2, btns)
+            return 'CovertedNone'
         # Find episode number
         search_start = re.search("Episode", s, re.IGNORECASE).end()
         search_stop = s.find("\n", search_start)
@@ -107,8 +116,16 @@ def convert_start(self):
         if self.dlg_abort:
             self.dlg_abort = False
             break
-        
-        s = docx2python(self.SxS_list[i]).text
+        try:
+            s = docx2python(self.SxS_list[i]).text
+        except Exception as e:
+            icon = QMessageBox.Icon.Warning
+            title = 'Cannot open file:'
+            text = e.strerror + ', Check if file opened'
+            text2 = os.path.basename(e.filename)
+            btns = QMessageBox.StandardButton.Ok
+            ret = warning_msg.show_msg(icon, title, text, text2, btns)
+            break
         # check if footnote or endnote at the end, 
         # this will cause error in finding next scene
         # because they appear as footnote1)/t and endnote1)/t

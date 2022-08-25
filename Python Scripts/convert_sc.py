@@ -1,5 +1,5 @@
 #! python3
-from PyQt6.QtWidgets import QDialog, QMessageBox
+from PyQt6.QtWidgets import QMessageBox
 import warning_msg
 import check
 import update_master

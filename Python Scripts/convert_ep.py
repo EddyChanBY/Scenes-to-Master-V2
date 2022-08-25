@@ -1,6 +1,6 @@
 #! python3
 
-from PyQt6.QtWidgets import QDialog, QMessageBox
+from PyQt6.QtWidgets import QMessageBox
 import convert_sc
 import warning_msg
 

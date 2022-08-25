@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QDialog, QMessageBox
+from PyQt6.QtWidgets import QMessageBox
 
 def show_msg(icon, title, text, text2, btns):
     msg = QMessageBox()

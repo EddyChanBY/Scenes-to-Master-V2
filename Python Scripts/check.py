@@ -1,9 +1,6 @@
 #! python3
-from PyQt6.QtWidgets import QDialog, QMessageBox
 import difflib
-import pandas as pd
 import numpy as np
-import warning_msg
 
 # Called by main to check input from the class Scene
 

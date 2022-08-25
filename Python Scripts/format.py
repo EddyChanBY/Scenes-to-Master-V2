@@ -306,21 +306,71 @@ def schedule(ws):
     # presuming pd has loaded into the ws
     lastrow = ws.max_row
     lastcolumn = ws.max_column
+    # heading row
+    for row in ws.iter_rows(min_col=1, max_col=lastcolumn, min_row=1, max_row= 1):
+        for cell in row:
+            cell.alignment=Alignment(horizontal='center', vertical='center')
+            cell.font = Font(bold=True)
 
-    # col width
-    ws.column_dimensions[get_column_letter(1)].width = 4.45
-    for col in range(2, 3):
-        ws.column_dimensions[get_column_letter(col)].width = 8.09
-    ws.column_dimensions[get_column_letter(4)].width = 4.55
-    ws.column_dimensions[get_column_letter(5)].width = 29.27
-    for col in range(6, 7):
-        ws.column_dimensions[get_column_letter(col)].width = 6.09
-    for col in range(8, 9):
-        ws.column_dimensions[get_column_letter(col)].width = 3.55
+    # col 1 Day
+    ws.column_dimensions[get_column_letter(1)].width = 3.82
+    for col in ws.iter_cols(min_col= 1, max_col= 1, min_row=2, max_row=lastrow):
+        for cell in col:
+            cell.alignment=Alignment(horizontal='center', vertical='top')
+    # col 2 Date
+    ws.column_dimensions[get_column_letter(2)].width = 16.09
+    for col in ws.iter_cols(min_col= 2, max_col= 2, min_row=2, max_row=lastrow):
+        for cell in col:
+            cell.alignment=Alignment(horizontal='right', vertical='top')
+            cell.number_format = 'dd-mmm-yy ddd'
+    # col 3 and 4, Team and Loc
+    ws.column_dimensions[get_column_letter(3)].width = 5
+    ws.column_dimensions[get_column_letter(4)].width = 5
+    for col in ws.iter_cols(min_col= 3, max_col= 4, min_row=2, max_row=lastrow):
+        for cell in col:
+            cell.alignment=Alignment(horizontal='center', vertical='top')
+    # col 5 Set
+    ws.column_dimensions[get_column_letter(5)].width = 30.09
+    for col in ws.iter_cols(min_col= 5, max_col= 5, min_row=2, max_row=lastrow):
+        for cell in col:
+            cell.alignment=Alignment(horizontal='left', vertical='top')
+    # col 6,7 From, To timing
+    ws.column_dimensions[get_column_letter(6)].width = 6.82
+    ws.column_dimensions[get_column_letter(7)].width = 6.82
+    for col in ws.iter_cols(min_col= 6, max_col= 7, min_row=2, max_row=lastrow):
+        for cell in col:
+            cell.alignment=Alignment(vertical='top')
+            cell.number_format = 'hh:mm'
+    # col 8,9 Sc and Pg
+    ws.column_dimensions[get_column_letter(8)].width = 5.73
+    ws.column_dimensions[get_column_letter(9)].width = 5.73
+    for col in ws.iter_cols(min_col= 8, max_col= 9, min_row=2, max_row=lastrow):
+        for cell in col:
+            cell.alignment=Alignment(vertical='top')
+    # col 10 Time
+    ws.column_dimensions[get_column_letter(10)].width = 6.82
+    for col in ws.iter_cols(min_col= 10, max_col= 10, min_row=2, max_row=lastrow):
+        for cell in col:
+            cell.alignment=Alignment(vertical='top')
+            cell.number_format = 'hh:mm'
+    # col 11, 12 'Extra' and 'Meal'
+    ws.column_dimensions[get_column_letter(11)].width = 5.55
+    ws.column_dimensions[get_column_letter(12)].width = 5.55
+    for col in ws.iter_cols(min_col= 11, max_col= 12, min_row=2, max_row=lastrow):
+        for cell in col:
+            cell.alignment=Alignment(vertical='top')
+    # col 13 to 15 the three remarks columns
+    ws.column_dimensions[get_column_letter(13)].width = 27.45
+    ws.column_dimensions[get_column_letter(14)].width = 27.45
+    ws.column_dimensions[get_column_letter(15)].width = 27.45
+    for col in ws.iter_cols(min_col= 13, max_col= 15, min_row=2, max_row=lastrow):
+        for cell in col:
+            cell.alignment=Alignment(vertical='top', wrap_text=True)
+
     for col in ws.iter_cols(min_row=1, max_row=1, min_col=1, max_col= lastcolumn):
         for cell in col:
-            cell.border = Border(bottom=Side(style='thin'))
+            cell.border = Border(bottom=Side(style='thin'), top=Side(border_style='thick'))
     for col in ws.iter_cols(min_row=lastrow, max_row=lastrow, min_col=1, max_col= lastcolumn):
         for cell in col:
-            cell.border = Border(bottom=Side(style='thin'))
+            cell.border = Border(bottom=Side(style='thick'))
     

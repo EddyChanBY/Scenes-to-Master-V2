@@ -2,7 +2,6 @@ from PyQt6 import QtWidgets
 from PyQt6.QtWidgets import QMessageBox
 import os
 import os.path
-from pathlib import Path
 import shutil
 import warning_msg
 

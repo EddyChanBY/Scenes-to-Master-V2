@@ -6,13 +6,12 @@ from PyQt6 import QtWidgets
 from PyQt6.QtWidgets import QDialog, QMessageBox
 from PyQt6 import QtGui
 import pandas as pd
-from openpyxl import Workbook, load_workbook
+from openpyxl import Workbook
 
 import settings
 import convert_all
 import warning_msg
 import report
-# import excel_app
 
 from mainWin import Ui_MainWindow
 from dialogWin import Ui_Dialog
@@ -22,7 +21,7 @@ basedir = os.path.dirname(__file__)
 #  It is used by Windows for taskbar icon stacking, jump lists, and taskbar pinning.
 try:
     from ctypes import windll  # Only exists on Windows.
-    myappid = 'ChanBangYuan.LongForm.Sc2Master.0.1'
+    myappid = 'ChanBangYuan.LongForm.Sc2Master.2.0'
     windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 except ImportError:
     pass
@@ -232,8 +231,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.doing_sc = 0
         self.m_ui.statusbar.showMessage("Please wait, opening files")
         self.m_ui.statusbar.repaint()
-        convert_all.convert_start(self)
-        self.m_ui.btn_report.setEnabled(True)
+        ret = convert_all.convert_start(self)
+        if ret != 'CovertedNone':
+            self.m_ui.btn_report.setEnabled(True)
 
     def btn_report_Clicked(self):
         # Note wb_master and wb_temp is different
